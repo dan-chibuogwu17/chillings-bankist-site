@@ -83,6 +83,8 @@ tabsContainer.addEventListener('click', (e) => {
  document.querySelector(`.operations__content--${clicked.dataset.tab}`).classList.add('operations__content--active');
 });
 
+
+
 // MENU FADE ANIMATION
 const handleHover = function (e) {
   if (e.target.classList.contains('nav__link')) {
@@ -102,10 +104,24 @@ nav.addEventListener('mouseover',  handleHover.bind(0.5));
 nav.addEventListener('mouseout', handleHover.bind(1));
 
 
+// STICKY NAVIGATION: with the scroll event
+// const initialCoords = section1.getBoundingClientRect();
+// window.addEventListener('scroll', function () {
+// window.scrollY > initialCoords.top ? nav.classList.add('sticky') : nav.classList.remove('sticky');
+// });
 
+// STICKY NAVIGATION: Intersection Observer API
+const obsCallback = function (entries, observer) {
+  entries.forEach((entry));
+};
 
+const obsOptions = {
+  root: null,
+  threshold: 0.1,
+};
+const observer = new IntersectionObserver(obsCallback, obsOptions);
 
-
+observer.observe(section1);
 
 // Inserting and Deleting Elements from the DOM
 // const header = document.querySelector('.header');
@@ -119,7 +135,6 @@ nav.addEventListener('mouseout', handleHover.bind(1));
 // insert element as a sibling
 // header.before(message);
 // header.after(message);
-
 // document.querySelector('.btn--close-cookie').addEventListener('click', () => {
   // message.parentElement.removeChild(message);
   // message.remove(); // new method for deleting dom elements
