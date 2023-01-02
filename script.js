@@ -60,7 +60,7 @@ document.querySelector(".nav__links").addEventListener('click', function (e) {
 
 
 // BUTTON SCROLLING
-btnScrollTo.addEventListener('click',function(e) {
+btnScrollTo.addEventListener('click',function() {
   section1.scrollIntoView({ behavior: 'smooth' });
 });
 
@@ -82,8 +82,6 @@ tabsContainer.addEventListener('click', (e) => {
   //Active Content Area
  document.querySelector(`.operations__content--${clicked.dataset.tab}`).classList.add('operations__content--active');
 });
-
-
 
 // MENU FADE ANIMATION
 const handleHover = function (e) {
@@ -114,7 +112,7 @@ nav.addEventListener('mouseout', handleHover.bind(1));
 const header = document.querySelector('.header');
 const navHeight = nav.getBoundingClientRect().height;
 
-const stickyNav = function (entries, observer) {
+const stickyNav = function (entries) {
   // we don't need to loop over the entries since we have only one threshold
   const [entry] = entries;
     entry.isIntersecting ? nav.classList.remove('sticky') : nav.classList.add('sticky');
@@ -238,7 +236,7 @@ imgTargets.forEach(img => imgObserver.observe(img));
 // h1.addEventListener('mouseenter', alertH1 );
 
 
-// Capturing, Tagrget and Bubbling Phase
+// Capturing, Target and Bubbling Phase
 // const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 //
 // const randomColor = () => `rgb(${randomInt(0, 255)}, ${randomInt(0, 255)}, ${randomInt(0, 255)})`;
