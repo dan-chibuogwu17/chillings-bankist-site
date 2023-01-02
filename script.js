@@ -111,17 +111,74 @@ nav.addEventListener('mouseout', handleHover.bind(1));
 // });
 
 // STICKY NAVIGATION: Intersection Observer API
-const obsCallback = function (entries, observer) {
-  entries.forEach((entry));
+const header = document.querySelector('.header');
+const navHeight = nav.getBoundingClientRect().height;
+
+const stickyNav = function (entries, observer) {
+  // we don't need to loop over the entries since we have only one threshold
+  const [entry] = entries;
+    entry.isIntersecting ? nav.classList.remove('sticky') : nav.classList.add('sticky');
 };
 
-const obsOptions = {
+const headerObserverOptions = {
+  threshold: 0,
+  rootMargin: `-${navHeight}px`,
+
+};
+
+const headerObserver = new IntersectionObserver(stickyNav, headerObserverOptions);
+
+headerObserver.observe(header);
+
+
+// REVEALING SECTIONS ON SCROLL
+const allSections = document.querySelectorAll('.section');
+const revealSection = (entries, observer) => {
+  // just destructuring the array instead of looping because we have only one threshold
+  const [entry] = entries;
+  if (!entry.isIntersecting) return;
+  entry.target.classList.remove('section--hidden');
+  observer.unobserve(entry.target);
+};
+
+const section1Options = {
   root: null,
-  threshold: 0.1,
+  threshold: 0.15,
 };
-const observer = new IntersectionObserver(obsCallback, obsOptions);
 
-observer.observe(section1);
+const sectionObserver = new IntersectionObserver(revealSection, section1Options);
+
+allSections.forEach(section => {
+  section.classList.add('section--hidden');
+  sectionObserver.observe(section);
+
+});
+
+
+// LAZY LOADING IMAGES
+const imgTargets = document.querySelectorAll('img[data-src]');
+const loadImg = function(entries, observer) {
+  const [entry] = entries;
+  if (!entry.isIntersecting) return;
+  //Replace src with data-src
+  const targetImg = entry.target;
+  targetImg.src = targetImg.dataset.src;
+  targetImg.addEventListener('load', () => {
+    targetImg.classList.remove('lazy-img');
+  });
+  //Stop observing to stop the function from continuously running even when not needed
+  observer.unobserve(targetImg);
+};
+
+const imgObserver = new IntersectionObserver(loadImg, {
+  root: null,
+  threshold: 0,
+  rootMargin: '200px',
+});
+
+imgTargets.forEach(img => imgObserver.observe(img));
+
+
 
 // Inserting and Deleting Elements from the DOM
 // const header = document.querySelector('.header');
@@ -220,3 +277,19 @@ observer.observe(section1);
 // console.log(h1.nextSibling);
 //  //if you need all the sibling elements, you can go to the parentElement and get it
 // console.log(h1.parentElement.children);
+
+
+// Intersection Observer API
+// const obsCallback = function (entries, observer) {
+//   entries.forEach((entry) => {
+//     console.log(entry)
+//   });
+// };
+//
+// const obsOptions = {
+//   root: null,
+//   threshold: ,
+// };
+// const observer = new IntersectionObserver(obsCallback, obsOptions);
+
+// observer.observe(section1);
