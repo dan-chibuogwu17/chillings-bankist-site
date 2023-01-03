@@ -8,7 +8,6 @@ const tabsContainer = document.querySelector('.operations__tab-container');
 const tabsContent = document.querySelectorAll(".operations__content");
 ///////////////////////////////////////
 // Modal window
-
 const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
@@ -60,7 +59,7 @@ document.querySelector(".nav__links").addEventListener('click', function (e) {
 
 
 // BUTTON SCROLLING
-btnScrollTo.addEventListener('click',function(e) {
+btnScrollTo.addEventListener('click',function() {
   section1.scrollIntoView({ behavior: 'smooth' });
 });
 
@@ -83,8 +82,6 @@ tabsContainer.addEventListener('click', (e) => {
  document.querySelector(`.operations__content--${clicked.dataset.tab}`).classList.add('operations__content--active');
 });
 
-
-
 // MENU FADE ANIMATION
 const handleHover = function (e) {
   if (e.target.classList.contains('nav__link')) {
@@ -104,17 +101,11 @@ nav.addEventListener('mouseover',  handleHover.bind(0.5));
 nav.addEventListener('mouseout', handleHover.bind(1));
 
 
-// STICKY NAVIGATION: with the scroll event
-// const initialCoords = section1.getBoundingClientRect();
-// window.addEventListener('scroll', function () {
-// window.scrollY > initialCoords.top ? nav.classList.add('sticky') : nav.classList.remove('sticky');
-// });
-
 // STICKY NAVIGATION: Intersection Observer API
 const header = document.querySelector('.header');
 const navHeight = nav.getBoundingClientRect().height;
 
-const stickyNav = function (entries, observer) {
+const stickyNav = function (entries) {
   // we don't need to loop over the entries since we have only one threshold
   const [entry] = entries;
     entry.isIntersecting ? nav.classList.remove('sticky') : nav.classList.add('sticky');
@@ -149,7 +140,7 @@ const section1Options = {
 const sectionObserver = new IntersectionObserver(revealSection, section1Options);
 
 allSections.forEach(section => {
-  section.classList.add('section--hidden');
+  // section.classList.add('section--hidden');
   sectionObserver.observe(section);
 
 });
@@ -158,16 +149,15 @@ allSections.forEach(section => {
 // LAZY LOADING IMAGES
 const imgTargets = document.querySelectorAll('img[data-src]');
 const loadImg = function(entries, observer) {
-  const [entry] = entries;
-  if (!entry.isIntersecting) return;
+  const [{ isIntersecting, target }] = entries;
+  if (!isIntersecting) return;
   //Replace src with data-src
-  const targetImg = entry.target;
-  targetImg.src = targetImg.dataset.src;
-  targetImg.addEventListener('load', () => {
-    targetImg.classList.remove('lazy-img');
+  target.src = target.dataset.src;
+  target.addEventListener('load', () => {
+    target.classList.remove('lazy-img');
   });
   //Stop observing to stop the function from continuously running even when not needed
-  observer.unobserve(targetImg);
+  observer.unobserve(target);
 };
 
 const imgObserver = new IntersectionObserver(loadImg, {
@@ -177,6 +167,49 @@ const imgObserver = new IntersectionObserver(loadImg, {
 });
 
 imgTargets.forEach(img => imgObserver.observe(img));
+
+
+// SLIDER COMPONENT
+const slider = document.querySelector('.slider');
+const slides = document.querySelectorAll('.slide');
+const btnLeft = document.querySelector('.slider__btn--left');
+const btnRight = document.querySelector('.slider__btn--right');
+const dotContainer = document.querySelector('.dots');
+let currentSlide = 0;
+const maxSlide = slides.length;
+
+const goToSlide = (slide) => slides.forEach((s, i) => s.style.transform = `translateX(${(i - slide) * 100}%)`);
+// Getting Slides into initial position
+goToSlide(currentSlide);
+//Next Slide
+const nextSlide = () => {
+  if (currentSlide === maxSlide - 1) currentSlide = 0;
+  else currentSlide++;
+  goToSlide(currentSlide);
+};
+// Previous Slide
+const prevSlide = () => {
+  if (currentSlide === 0) currentSlide = maxSlide -1 ;
+  else currentSlide--;
+  goToSlide(currentSlide);
+};
+
+btnRight.addEventListener('click', nextSlide);
+btnLeft.addEventListener('click', prevSlide);
+
+document.addEventListener('keyup', (e) => {
+  e.key === "ArrowLeft" && prevSlide();
+   e.key === "ArrowRight" && nextSlide();
+});
+
+// Slider Dots
+const createDots = () => {
+  slides.forEach((_, i) => {
+    dotContainer.insertAdjacentHTML('beforeend', `<button class="dots__dot" data-slide="${i}"></button>` );
+  });
+};
+createDots();
+
 
 
 
@@ -238,7 +271,7 @@ imgTargets.forEach(img => imgObserver.observe(img));
 // h1.addEventListener('mouseenter', alertH1 );
 
 
-// Capturing, Tagrget and Bubbling Phase
+// Capturing, Target and Bubbling Phase
 // const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 //
 // const randomColor = () => `rgb(${randomInt(0, 255)}, ${randomInt(0, 255)}, ${randomInt(0, 255)})`;
