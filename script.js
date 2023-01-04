@@ -133,7 +133,7 @@ const section1Options = {
 const sectionObserver = new IntersectionObserver(revealSection, section1Options);
 
 allSections.forEach(section => {
-  // section.classList.add('section--hidden');
+  section.classList.add('section--hidden');
   sectionObserver.observe(section);
 
 });
