@@ -40,13 +40,6 @@ document.addEventListener('keydown', function (e) {
 
 //////////////////////////////////////////////////////////
 // PAGE NAVIGATION
-// document.querySelectorAll(".nav__link").forEach(function(el) {
-//  el.addEventListener('click', function (e)  {
-//    e.preventDefault();
-//    const id = this.getAttribute('href');
-//    document.querySelector(id).scrollIntoView({behavior:'smooth'});
-//  })
-// });
 // Using Event Delegation
 document.querySelector(".nav__links").addEventListener('click', function (e) {
   e.preventDefault();
@@ -170,45 +163,68 @@ imgTargets.forEach(img => imgObserver.observe(img));
 
 
 // SLIDER COMPONENT
-const slider = document.querySelector('.slider');
-const slides = document.querySelectorAll('.slide');
-const btnLeft = document.querySelector('.slider__btn--left');
-const btnRight = document.querySelector('.slider__btn--right');
-const dotContainer = document.querySelector('.dots');
-let currentSlide = 0;
-const maxSlide = slides.length;
+const slider = () => {
+  const slides = document.querySelectorAll('.slide');
+  const btnLeft = document.querySelector('.slider__btn--left');
+  const btnRight = document.querySelector('.slider__btn--right');
+  const dotContainer = document.querySelector('.dots');
+  let currentSlide = 0;
+  const maxSlide = slides.length;
 
-const goToSlide = (slide) => slides.forEach((s, i) => s.style.transform = `translateX(${(i - slide) * 100}%)`);
-// Getting Slides into initial position
-goToSlide(currentSlide);
-//Next Slide
-const nextSlide = () => {
-  if (currentSlide === maxSlide - 1) currentSlide = 0;
-  else currentSlide++;
-  goToSlide(currentSlide);
-};
-// Previous Slide
-const prevSlide = () => {
-  if (currentSlide === 0) currentSlide = maxSlide -1 ;
-  else currentSlide--;
-  goToSlide(currentSlide);
-};
-
-btnRight.addEventListener('click', nextSlide);
-btnLeft.addEventListener('click', prevSlide);
-
-document.addEventListener('keyup', (e) => {
-  e.key === "ArrowLeft" && prevSlide();
-   e.key === "ArrowRight" && nextSlide();
-});
-
+//FUNCTIONS
+  const goToSlide = (slide) => slides.forEach((s, i) => s.style.transform = `translateX(${(i - slide) * 100}%)`);
 // Slider Dots
-const createDots = () => {
-  slides.forEach((_, i) => {
-    dotContainer.insertAdjacentHTML('beforeend', `<button class="dots__dot" data-slide="${i}"></button>` );
+  const createDots = () => {
+    slides.forEach((_, i) => {
+      dotContainer.insertAdjacentHTML('beforeend', `<button class='dots__dot' data-slide='${i}'></button>`);
+    });
+  };
+  const activateDots = slide => {
+    dotContainer.querySelectorAll('.dots__dot').forEach(d => {
+      d.classList.remove('dots__dot--active');
+    })
+    dotContainer.querySelector(`.dots__dot[data-slide="${slide}"]`).classList.add('dots__dot--active');
+  };
+//Next Slide
+  const nextSlide = () => {
+    if (currentSlide === maxSlide - 1) currentSlide = 0;
+    else currentSlide++;
+    goToSlide(currentSlide);
+    activateDots(currentSlide);
+  };
+// Previous Slide
+  const prevSlide = () => {
+    if (currentSlide === 0) currentSlide = maxSlide - 1;
+    else currentSlide--;
+    goToSlide(currentSlide);
+    activateDots(currentSlide);
+  };
+
+  const init = () => {
+    goToSlide(currentSlide);
+    createDots();
+    activateDots(currentSlide);
+  };
+  init();
+//Event Handlers
+  btnRight.addEventListener('click', nextSlide);
+  btnLeft.addEventListener('click', prevSlide);
+
+  document.addEventListener('keyup', (e) => {
+    e.key === "ArrowLeft" && prevSlide();
+    e.key === "ArrowRight" && nextSlide();
+  });
+
+  dotContainer.addEventListener('click', (e) => {
+    const { target } = e;
+    if (!target.classList.contains('dots__dot')) return;
+    const { slide } = target.dataset;
+    currentSlide = slide;
+    goToSlide(currentSlide);
+    activateDots(currentSlide);
   });
 };
-createDots();
+slider();
 
 
 
@@ -326,3 +342,19 @@ createDots();
 // const observer = new IntersectionObserver(obsCallback, obsOptions);
 
 // observer.observe(section1);
+
+
+//LIFECYCLE EVENTS
+document.addEventListener('DOMContentLoaded', function(e) {
+  console.log("HTML and Js parsed");
+});
+
+window.addEventListener('load', function(e) {
+  console.log('Page fully Loaded');
+});
+
+// window.addEventListener('beforeunload', (e) => {
+//   e.preventDefault();
+//   console.log(e);
+  // e.returnValue = ""; // Just leave this empty because we cannot customize the message
+// });
